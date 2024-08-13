@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  // 사용자 ID
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // 가입 시 사용된 email
+  email       String    @unique @db.Text
+  // 비밀번호 → 암호화 필요
+  password    String    @db.Text
+  // 가입 시간
+  joined_time DateTime  @default(now()) @db.Timestamptz()
+  Product     Product[]
+  Like        Like[]
+  Review      Review[]
+
+  @@map("user")
+}
+
+// 상품
+model Product {
+  // Row ID
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // 상품 등록자 ID
+  user         User      @relation(fields: [user_id], references: [id])
+  user_id      String    @db.Uuid
+  // 상품명
+  name         String    @db.Text
+  // 상품 설명
+  description  String    @db.Text
+  // 상품 브랜드
+  brand        String    @db.Text
+  // 상품 가격
+  price        Int       @db.Integer
+  // 상품 색상
+  color        String    @db.Text
+  // 생성 시간
+  created_time DateTime  @default(now()) @db.Timestamptz()
+  // 수정 시간
+  updated_time DateTime? @db.Timestamptz()
+  // 삭제 시간 -> 기록할 것인가 ?
+  deleted_time DateTime? @db.Timestamptz()
+  Like         Like[]
+  Review       Review[]
+
+  @@map("item")
+}
+
+// 좋아요
+model Like {
+  // 유저 Id
+  user       User    @relation(fields: [user_id], references: [id])
+  user_id    String  @db.Uuid
+  // 좋아요 누른 상품
+  product    Product @relation(fields: [product_id], references: [id])
+  product_id String  @db.Uuid
+
+  // 생성 시간 => 일정 시간 grouping하기 위해 사용
+  created_time DateTime @default(now()) @db.Timestamptz()
+
+  @@unique([user_id, product_id])
+  @@map("like")
+}
+
+model Review {
+  // Row ID
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // 후기 상품 ID
+  product      Product  @relation(fields: [product_id], references: [id])
+  product_id   String   @db.Uuid
+  // 작성자 ID
+  user         User     @relation(fields: [user_id], references: [id])
+  user_id      String   @db.Uuid
+  // 후기
+  description  String   @db.Text()
+  // 생성 시간
+  created_time DateTime @default(now()) @db.Timestamptz()
+
+  @@map("review")
+}
