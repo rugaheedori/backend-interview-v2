@@ -51,7 +51,7 @@ model Product {
   Like         Like[]
   Review       Review[]
 
-  @@map("item")
+  @@map("product")
 }
 
 // 좋아요

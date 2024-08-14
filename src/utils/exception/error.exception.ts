@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
-import { IS_DEFINED, IS_NOT_EMPTY } from 'class-validator';
+import { IS_DEFINED, IS_ENUM, IS_NOT_EMPTY } from 'class-validator';
 import { Response } from 'express';
 import {
   Details,

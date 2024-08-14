@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
-    private logger: MyLogger
+    private logger: MyLogger,
   ) {
     this.ACCESSTOKEN_SECRET = this.configService.get('ACCESSTOKEN_SECRET');
   }
@@ -50,8 +50,6 @@ export class AuthGuard implements CanActivate {
 
       return verfiedUserInfo.id;
     } catch (err) {
-      this.logger.error(`verify: ${err.message}`);
-
       if (err instanceof TokenExpiredError) {
         throw new ErrorHandler(
           ErrorCode.UNAUTHORIZED,
@@ -65,6 +63,8 @@ export class AuthGuard implements CanActivate {
           '유효하지 않은 토큰입니다. 다시 로그인해주세요.',
         );
       }
+
+      this.logger.error(`verify: ${err.message}`);
       throw new ErrorHandler(ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }

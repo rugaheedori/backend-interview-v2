@@ -36,7 +36,7 @@ export class AccountRepository {
     }
   }
 
-  async checkSignedUser(email: string): Promise<UserInfo | undefined> {
+  async checkSignedUser(email: string): Promise<UserInfo | null> {
     try {
       const userInfo = await this.dbService.user.findUnique({
         select: {

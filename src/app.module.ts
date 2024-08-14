@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { CacheModule } from './cache/cache.module';
 import { DbModule } from './db/db.module';
 import { MyLogger } from './utils/logger';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -15,6 +16,10 @@ import { MyLogger } from './utils/logger';
     CacheModule,
     AccountModule,
     AuthModule,
+<<<<<<< Updated upstream
+=======
+    ProductModule,
+>>>>>>> Stashed changes
   ],
   controllers: [AppController],
   providers: [AppService, MyLogger],
