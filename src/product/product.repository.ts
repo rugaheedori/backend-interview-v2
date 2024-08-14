@@ -60,6 +60,7 @@ export class ProductRepository {
         },
         where: {
           id: productId,
+          deleted_time: null,
         },
       });
 

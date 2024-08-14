@@ -6,8 +6,9 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CacheModule } from './cache/cache.module';
 import { DbModule } from './db/db.module';
-import { MyLogger } from './utils/logger';
+import { LikeModule } from './like/like.module';
 import { ProductModule } from './product/product.module';
+import { MyLogger } from './utils/logger';
 
 @Module({
   imports: [
@@ -16,10 +17,8 @@ import { ProductModule } from './product/product.module';
     CacheModule,
     AccountModule,
     AuthModule,
-<<<<<<< Updated upstream
-=======
     ProductModule,
->>>>>>> Stashed changes
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService, MyLogger],

@@ -78,6 +78,10 @@ export class ErrorHandler extends HttpException {
         super(msg, HttpStatus.BAD_REQUEST);
         this.errorDetailCode = ErrorDetailCode.INVALID;
         break;
+      case ErrorCode.BAD_REQUEST:
+        msg = message || ErrorMsg.BAD_REQUEST;
+        super(msg, HttpStatus.BAD_REQUEST);
+        break;
       case ErrorCode.UNAUTHORIZED:
         msg = message || ErrorMsg.UNAUTHORIZED;
         super(msg, HttpStatus.UNAUTHORIZED);
