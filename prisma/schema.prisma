@@ -38,6 +38,8 @@ model Product {
   brand        String    @db.Text
   // 상품 가격
   price        Int       @db.Integer
+  // 상품 사이즈
+  size         String    @db.Text
   // 상품 색상
   color        String    @db.Text
   // 생성 시간

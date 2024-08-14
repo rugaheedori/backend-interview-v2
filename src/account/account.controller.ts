@@ -16,9 +16,9 @@ export class AccountController {
   }
 
   @Post('sign-in')
-  async signIn(@Body() data: SignIn): Promise<{ success: boolean; tokenInfo: UserTokenInfo }> {
+  async signIn(@Body() data: SignIn): Promise<{ success: boolean; token_info: UserTokenInfo }> {
     const tokenInfo = await this.accountService.signIn(data);
 
-    return { success: true, tokenInfo };
+    return { success: true, token_info: tokenInfo};
   }
 }

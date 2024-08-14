@@ -6,6 +6,10 @@ export class MyLogger extends ConsoleLogger {
     super.log(`🌈 ${message}`, ...optionalParams);
   }
 
+  warn(message: any, ...optionalParams: any[]) {
+    super.warn(`📢 ${message}`, ...optionalParams);
+  }
+
   error(message: any, ...optionalParams: any[]) {
     super.error(`🚨 ${message}`, ...optionalParams);
   }
