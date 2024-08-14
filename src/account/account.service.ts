@@ -5,18 +5,27 @@ import { ErrorCode } from '../utils/exception/error.type';
 import { AccountRepository } from './account.repository';
 import { SignUp } from './dto/sign-up.dto';
 import { SignUpInfo } from './type';
+import { SignIn } from './dto/sign-in.dto';
+import { AuthService } from '../auth/auth.service';
+import { UserTokenInfo } from '../auth/type';
+import { MyLogger } from '../utils/logger';
 
 @Injectable()
 export class AccountService {
-  constructor(private accountRepository: AccountRepository) {}
+  constructor(
+    private accountRepository: AccountRepository,
+    private authService: AuthService,
+    private logger: MyLogger,
+  ) {}
+
   async hashPassword(password: string): Promise<string> {
     try {
       const salt = await bcrypt.genSalt();
-      const passwordHash = await bcrypt.hash(password, salt);
+      const hashedPassword = await bcrypt.hash(password, salt);
 
-      return passwordHash;
+      return hashedPassword;
     } catch (err) {
-      console.error(`hashPassword: ${err.message}`);
+      this.logger.error(`hashPassword: ${err.message}`);
       throw new ErrorHandler(ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }
@@ -53,5 +62,45 @@ export class AccountService {
     await this.accountRepository.createUser(signUpInfo);
 
     return true;
+  }
+
+  async checkPassword(password: string, hashPassword: string): Promise<boolean> {
+    try {
+      const isCorrect = await bcrypt.compare(password, hashPassword);
+
+      return isCorrect;
+    } catch (err) {
+      this.logger.error(`checkPassword: ${err.message}`);
+      throw new ErrorHandler(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async signIn(data: SignIn): Promise<UserTokenInfo> {
+    // 해당 email 가입 여부 조회
+    const userInfo = await this.accountRepository.checkSignedUser(data.email);
+
+    if (userInfo?.password == null) {
+      throw new ErrorHandler(
+        ErrorCode.UNAUTHORIZED,
+        {},
+        '이메일 또는 패스워드를 다시 한번 확인해주세요',
+      );
+    }
+
+    const { id: userId, password: hashedPassword } = userInfo;
+    // 비밀번호 일치 확인
+    const isCorrect = await this.checkPassword(data.password, hashedPassword);
+
+    if (!isCorrect) {
+      throw new ErrorHandler(
+        ErrorCode.UNAUTHORIZED,
+        {},
+        '이메일 또는 패스워드를 다시 한번 확인해주세요',
+      );
+    }
+
+    const tokenInfo = await this.authService.createToken(userId);
+
+    return tokenInfo;
   }
 }

@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
+import { ErrorHandler } from '../utils/exception/error.exception';
+import { ErrorCode } from '../utils/exception/error.type';
 
 @Injectable()
 export class CacheService {
@@ -18,5 +20,18 @@ export class CacheService {
     });
 
     this.redisClient = redis;
+  }
+
+  async set(key: string, value: string, ttl?: number): Promise<void> {
+    try {
+      if (ttl) {
+        await this.redisClient.setex(key, ttl, JSON.stringify(value)); // sec
+      } else {
+        await this.redisClient.set(key, JSON.stringify(value));
+      }
+    } catch (err) {
+      // this.logger.error(`set: ${err.message}`);
+      throw new ErrorHandler(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
   }
 }

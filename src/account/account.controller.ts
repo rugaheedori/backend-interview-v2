@@ -1,6 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { SignUp } from './dto/sign-up.dto';
+import { UserTokenInfo } from '../auth/type';
 import { AccountService } from './account.service';
+import { SignIn } from './dto/sign-in.dto';
+import { SignUp } from './dto/sign-up.dto';
 
 @Controller('api/account')
 export class AccountController {
@@ -11,5 +13,12 @@ export class AccountController {
     await this.accountService.signUp(data);
 
     return { success: true };
+  }
+
+  @Post('sign-in')
+  async signIn(@Body() data: SignIn): Promise<{ success: boolean; tokenInfo: UserTokenInfo }> {
+    const tokenInfo = await this.accountService.signIn(data);
+
+    return { success: true, tokenInfo };
   }
 }

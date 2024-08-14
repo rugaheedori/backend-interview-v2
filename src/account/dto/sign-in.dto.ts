@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, Matches } from 'class-validator';
 
-export class SignUp {
+export class SignIn {
   @IsEmail()
   @IsNotEmpty()
   email: string;
@@ -11,10 +11,4 @@ export class SignUp {
   })
   @IsNotEmpty()
   password: string;
-
-  @Matches(RegExp(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])(?!.*[가-힣]).{5,10}$/), {
-    message: '비밀번호 형식이 잘못 되었습니다.',
-  })
-  @IsNotEmpty()
-  confirm_password: string;
 }

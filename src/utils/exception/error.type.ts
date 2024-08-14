@@ -15,6 +15,7 @@ export enum ErrorDetailCode {
   MISSING = 'MISSING',
   NOT_FOUND = 'NOT_FOUND',
   UNAUTHORIZED = 'UNAUTHORIZED',
+  EXPIRED = 'EXPIRED',
 }
 
 export enum ErrorMsg {

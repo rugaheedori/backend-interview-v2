@@ -9,6 +9,9 @@ import {
   ErrorFormat,
   ErrorMsg,
 } from './error.type';
+import { MyLogger } from '../logger';
+
+const logger = new MyLogger();
 
 function setErrorDetails(details: string, ErrorDetailCode: ErrorDetailCode): ErrorDetails {
   const errorDetail = {
@@ -147,12 +150,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
       res.status(status).json(error);
     } else {
-      console.error('Unhandled exception:', exception);
-
+      logger.error(`Unhandled exception: ${exception.message}`);
       // 예상하지 못한 에러 예외처리
       const error: ErrorFormat = {
         code: ErrorCode.INTERNAL_SERVER_ERROR,
-        message: exception.message,
+        message: ErrorMsg.UNHANDLED,
         details: null,
       };
 
