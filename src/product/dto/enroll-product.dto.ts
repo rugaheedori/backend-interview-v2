@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber, IsString, Length, Min } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString, Length, Max, Min } from 'class-validator';
 import { Size } from '../type';
 
 export class EnrollProduct {
@@ -15,13 +15,14 @@ export class EnrollProduct {
 
   @IsString()
   @IsNotEmpty()
-  @Length(1, 20)
+  @Length(1, 20, { message: '20자 이하로 작성해주세요.' })
   brand: string;
 
   @IsNumber()
   @IsNotEmpty()
   @Transform(({ value }) => Number(value))
-  @Min(0, { message: '최소 금액은 1원 이상입니다.' })
+  @Min(1, { message: '최소 금액은 1원 이상입니다.' })
+  @Max(100000000, { message: '최대 금액은 천만원 이하입니다.' })
   price: number;
 
   @IsString()

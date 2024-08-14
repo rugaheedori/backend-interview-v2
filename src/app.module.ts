@@ -8,6 +8,7 @@ import { CacheModule } from './cache/cache.module';
 import { DbModule } from './db/db.module';
 import { LikeModule } from './like/like.module';
 import { ProductModule } from './product/product.module';
+import { ReviewModule } from './review/review.module';
 import { MyLogger } from './utils/logger';
 
 @Module({
@@ -19,6 +20,7 @@ import { MyLogger } from './utils/logger';
     AuthModule,
     ProductModule,
     LikeModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService, MyLogger],

@@ -6,7 +6,7 @@ import { ErrorCode, ErrorDetailCode } from '../utils/exception/error.type';
 import { MyLogger } from '../utils/logger';
 import { ProductRepository } from './product.repository';
 import { ProductService } from './product.service';
-import { Size } from './type';
+import { Size, SortType } from './type';
 
 describe('ProductService', () => {
   let service: ProductService;
@@ -28,6 +28,50 @@ describe('ProductService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('상품 목록 조회하기', () => {
+    const testData = {
+      brand: 'nike',
+      min_price: 100,
+      max_price: 1000,
+      size: Size.L,
+      color: 'black',
+      sort: SortType.like,
+      cursor: null,
+      limit: 2,
+    };
+
+    it('최소값과 최대값이 모두 기입된 경우 최소값이 최대값보다 큰 경우 400 error 발생', async () => {
+      try {
+        await service.getProductList({ ...testData, min_price: 1000, max_price: 100 });
+      } catch (err) {
+        expect(err).toBeInstanceOf(ErrorHandler);
+        expect(err).toHaveProperty('status', 400);
+        expect(err).toHaveProperty('code', ErrorCode.INVALID_ARGUMENT);
+        expect(err).toHaveProperty('details.code', ErrorDetailCode.INVALID);
+        expect(err).toHaveProperty('details.field', 'price');
+        expect(err).toHaveProperty('message', '최소값은 최대값보다 클 수 없습니다.');
+      }
+    });
+  });
+
+  describe('상품 상세 조회하기', () => {
+    const productId = 'da8e4a88-6659-4e94-8fae-9391fe9e3efc';
+
+    it('등록되어 있는 상품이 아니라면 404 error 발생', async () => {
+      try {
+        jest.spyOn(repository, 'getProductInfo').mockResolvedValueOnce(null);
+        await service.getProductDetail(productId);
+      } catch (err) {
+        expect(err).toBeInstanceOf(ErrorHandler);
+        expect(err).toHaveProperty('status', 404);
+        expect(err).toHaveProperty('code', ErrorCode.NOT_FOUND);
+        expect(err).toHaveProperty('details.code', ErrorDetailCode.NOT_FOUND);
+        expect(err).toHaveProperty('details.field', 'product');
+        expect(err).toHaveProperty('message', '해당 상품이 존재하지 않습니다.');
+      }
+    });
   });
 
   describe('상품 등록하기', () => {

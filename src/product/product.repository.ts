@@ -6,10 +6,74 @@ import { ErrorCode } from '../utils/exception/error.type';
 import { MyLogger } from '../utils/logger';
 import { EnrollProduct } from './dto/enroll-product.dto';
 import { ModifyProduct } from './dto/modify-product.dto';
+import { CursorOption, FilterOption, OrderOption, ProductInfo, ProductListInfo } from './type';
 
 @Injectable()
 export class ProductRepository {
   constructor(private dbService: DbService, private logger: MyLogger) {}
+
+  async getProductList(
+    limit: number,
+    orderOption?: OrderOption,
+    filterOption?: FilterOption,
+    cursorOption?: CursorOption,
+  ): Promise<Array<ProductListInfo>> {
+    try {
+      const productList = await this.dbService.product.findMany({
+        select: {
+          id: true,
+          name: true,
+          price: true,
+          size: true,
+          color: true,
+          created_time: true,
+          _count: {
+            select: {
+              Like: true,
+              Review: true,
+            },
+          },
+        },
+        where: {
+          ...filterOption,
+          deleted_time: null,
+        },
+        ...cursorOption,
+        take: limit,
+        orderBy: orderOption,
+      });
+
+      return productList as Array<ProductListInfo>;
+    } catch (err) {
+      this.logger.error(`getProductList: ${err.message}`);
+      throw new ErrorHandler(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  async getProductInfo(productId: string): Promise<ProductInfo | null> {
+    try {
+      const productInfo = (await this.dbService.product.findUnique({
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          brand: true,
+          price: true,
+          size: true,
+          color: true,
+        },
+        where: {
+          id: productId,
+          deleted_time: null,
+        },
+      })) as unknown as ProductInfo;
+
+      return productInfo;
+    } catch (err) {
+      this.logger.error(`getProductInfo: ${err.message}`);
+      throw new ErrorHandler(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   async checkEnrolledProduct(userId: string, data: EnrollProduct): Promise<boolean> {
     try {
